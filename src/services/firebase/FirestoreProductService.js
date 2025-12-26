@@ -34,9 +34,10 @@ export class FirestoreProductService extends IProductService {
         return unsubscribe;
     }
 
-    async addProduct(productData) {
-        const docRef = await addDoc(collection(db, 'products'), productData);
-        return { id: docRef.id, ...productData };
+    async addProduct(productData, businessId) {
+        const dataWithBusiness = businessId ? { ...productData, businessId } : productData;
+        const docRef = await addDoc(collection(db, 'products'), dataWithBusiness);
+        return { id: docRef.id, ...dataWithBusiness };
     }
 
     async updateProduct(productId, updates) {

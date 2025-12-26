@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useOrders } from '../../context/OrderContext';
 import { useProducts } from '../../context/ProductContext';
+import { useBusiness } from '../../context/BusinessContext';
 
 const AdminDashboard = () => {
+    const { currentBusiness } = useBusiness();
     const { subscribeToAllOrders } = useOrders();
     const { products } = useProducts();
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
+        if (!currentBusiness) return;
+
         const unsubscribe = subscribeToAllOrders((allOrders) => {
-            setOrders(allOrders);
+            // Strict filtering: Only show orders for this business
+            const businessOrders = allOrders.filter(o => o.businessId === currentBusiness.id);
+            setOrders(businessOrders);
         });
         return unsubscribe;
-    }, []);
+    }, [currentBusiness]);
 
     const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);
     const pendingOrders = orders.filter(o => o.status === 'pending').length;

@@ -8,13 +8,13 @@ const AdminProducts = () => {
     const [editingProduct, setEditingProduct] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
-        category: 'Sparklers',
+        category: 'Electronics',
         price: '',
         weight: '',
         image: ''
     });
 
-    const categories = ['Sparklers', 'Ground', 'Aerial', 'Fountains', 'Crackers', 'Combo'];
+    const categories = ['Electronics', 'Fashion', 'Home & Living', 'Groceries', 'Beauty', 'Toys', 'Sports'];
 
     const handleOpenModal = (product = null) => {
         if (product) {
@@ -24,7 +24,7 @@ const AdminProducts = () => {
             setEditingProduct(null);
             setFormData({
                 name: '',
-                category: 'Sparklers',
+                category: 'Electronics',
                 price: '',
                 weight: '',
                 image: ''
@@ -137,13 +137,26 @@ const AdminProducts = () => {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Category</label>
-                                <select
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm border p-2"
-                                    value={formData.category}
-                                    onChange={e => setFormData({ ...formData, category: e.target.value })}
-                                >
-                                    {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                                </select>
+                                <div className="mt-1 flex gap-2">
+                                    <select
+                                        className="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm border p-2"
+                                        value={categories.includes(formData.category) ? formData.category : 'Custom'}
+                                        onChange={e => {
+                                            const val = e.target.value;
+                                            if (val !== 'Custom') setFormData({ ...formData, category: val });
+                                        }}
+                                    >
+                                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                                        <option value="Custom">Custom...</option>
+                                    </select>
+                                    <input
+                                        type="text"
+                                        placeholder="Or type custom category"
+                                        className="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm border p-2"
+                                        value={formData.category}
+                                        onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                    />
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Price (e.g. ₹450)</label>

@@ -36,7 +36,7 @@ const Login = () => {
                 </h2>
                 <p className="mt-2 text-center text-sm text-slate-light">
                     Or{' '}
-                    <Link to="/register" className="font-medium text-secondary hover:text-secondary-dark transition-colors">
+                    <Link to="/a2z/buyer/register" className="font-medium text-secondary hover:text-secondary-dark transition-colors">
                         create a new account
                     </Link>
                 </p>

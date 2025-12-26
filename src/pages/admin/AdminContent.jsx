@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Loader } from 'lucide-react';
+import { Save, Loader, ExternalLink } from 'lucide-react';
 import { useContent } from '../../context/ContentContext';
+import { useBusiness } from '../../context/BusinessContext';
+import { contentDefaults } from '../../constants/contentDefaults';
 
 const AdminContent = () => {
+    const { currentBusiness } = useBusiness();
     const { content, updatePageContent, loading: contextLoading } = useContent();
     const [activeTab, setActiveTab] = useState('home');
     const [formData, setFormData] = useState({});
@@ -10,9 +13,14 @@ const AdminContent = () => {
     const [message, setMessage] = useState(null);
 
     useEffect(() => {
-        if (content[activeTab]) {
-            setFormData(content[activeTab]);
-        }
+        // Merge DB content with Defaults
+        const dbContent = content[activeTab] || {};
+        const defaultContent = contentDefaults[activeTab] || {};
+
+        setFormData({
+            ...defaultContent, // Start with defaults
+            ...dbContent       // Override with DB values (if any exist)
+        });
     }, [content, activeTab]);
 
     const handleChange = (e) => {
@@ -69,11 +77,17 @@ const AdminContent = () => {
         <div className="max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">Content Management</h2>
-                {message && (
-                    <div className={`px-4 py-2 rounded-lg ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                        {message.text}
-                    </div>
-                )}
+                <div className="flex gap-4">
+                    <a
+                        href={`/a2z/${currentBusiness?.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors border border-indigo-200"
+                    >
+                        <ExternalLink className="w-5 h-5 mr-2" />
+                        View Live Store
+                    </a>
+                </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -87,7 +101,7 @@ const AdminContent = () => {
                                 : 'text-gray-500 hover:bg-gray-50'
                                 }`}
                         >
-                            {tab}
+                            {tab === 'home' ? 'Home Page' : tab === 'about' ? 'About Us' : 'Contact Us'}
                         </button>
                     ))}
                 </div>

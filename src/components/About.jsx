@@ -1,29 +1,32 @@
 import React from 'react';
 import { Shield, Sparkles, Truck } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
+import { contentDefaults } from '../constants/contentDefaults';
 
 const About = () => {
     const { content } = useContent();
+    const defaults = contentDefaults.about;
+
     const {
-        title = "About Us",
-        mainHeading = "Your Celebration Partner",
-        description = "Gunda Srinivas Wholesale Fireworks has been bringing sparkle to celebrations for years. We specialize in premium fireworks and seasonal goods, serving retailers and event planners with quality products and exceptional service."
+        title = defaults.title,
+        mainHeading = defaults.mainHeading,
+        description = defaults.description
     } = content.about || {};
 
     const features = [
         {
             name: 'Safety First',
-            description: 'All our products meet strict safety standards and come with clear usage instructions for a safe celebration.',
+            description: 'All our products meet strict safety standards and ensure user protection.',
             icon: Shield,
         },
         {
             name: 'Premium Quality',
-            description: 'We source only the finest fireworks and seasonal goods, ensuring vibrant colors and reliable performance.',
+            description: 'We source only the finest materials, ensuring durability and reliability.',
             icon: Sparkles,
         },
         {
-            name: 'Wholesale Pricing',
-            description: 'Competitive bulk pricing with reliable delivery for retailers and event organizers across the region.',
+            name: 'Best Pricing',
+            description: 'Competitive pricing with reliable delivery options for all our customers.',
             icon: Truck,
         },
     ];

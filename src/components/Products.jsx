@@ -9,10 +9,9 @@ const Products = () => {
     const { addToCart } = useCart();
     const { products, loading } = useProducts();
 
-    const categories = ['All', 'Sparklers', 'Ground', 'Aerial', 'Fountains', 'Crackers', 'Combo'];
-
-    // Fallback if no products yet (e.g. first run before admin adds anything)
-    // In a real scenario, we might want to seed the DB, but for now empty is valid.
+    // Dynamically derive categories from products
+    const uniqueCategories = ['All', ...new Set(products.map(p => p.category).filter(Boolean))];
+    const categories = uniqueCategories.length > 1 ? uniqueCategories : ['All', 'Electronics', 'Furniture', 'Fashion', 'Home'];
 
     const filteredProducts = products.filter((product) => {
         const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -26,7 +25,7 @@ const Products = () => {
                 <div className="text-center mb-12">
                     <h2 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl font-serif">Our Collection</h2>
                     <p className="mt-4 max-w-2xl text-xl text-slate-light mx-auto font-light">
-                        Premium fireworks for every celebration. Wholesale pricing available.
+                        Discover premium products curated just for you. Quality and satisfaction guaranteed.
                     </p>
                 </div>
 
@@ -76,12 +75,12 @@ const Products = () => {
                                 <div key={product.id} className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col">
                                     <div className="w-full h-64 bg-gray-200 overflow-hidden relative">
                                         <img
-                                            src={product.image || 'https://via.placeholder.com/300'}
+                                            src={product.imageUrl || product.image || 'https://via.placeholder.com/300'}
                                             alt={product.name}
                                             className="w-full h-full object-center object-cover transform group-hover:scale-110 transition-transform duration-700"
                                         />
                                         <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-primary uppercase tracking-wide shadow-sm">
-                                            {product.category}
+                                            {product.category || 'General'}
                                         </div>
                                     </div>
                                     <div className="p-6 flex-1 flex flex-col">
@@ -92,9 +91,9 @@ const Products = () => {
                                                     {product.name}
                                                 </a>
                                             </h3>
-                                            <p className="text-lg font-bold text-secondary">{product.price}</p>
+                                            <p className="text-lg font-bold text-secondary">${product.price}</p>
                                         </div>
-                                        <p className="mt-1 text-sm text-slate-light mb-6">Qty: {product.weight}</p>
+                                        <p className="mt-1 text-sm text-slate-light mb-6">In Stock: {product.stock || product.weight || 'Available'}</p>
                                         <div className="mt-auto">
                                             <button
                                                 onClick={() => {

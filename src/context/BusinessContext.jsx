@@ -1,0 +1,60 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { FirestoreBusinessService } from '../services/firebase/FirestoreBusinessService';
+
+const BusinessContext = createContext();
+const businessService = new FirestoreBusinessService();
+
+export const useBusiness = () => {
+    const context = useContext(BusinessContext);
+    if (!context) {
+        throw new Error('useBusiness must be used within a BusinessProvider');
+    }
+    return context;
+};
+
+export const BusinessProvider = ({ children }) => {
+    const { businessSlug } = useParams();
+    const [currentBusiness, setCurrentBusiness] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchBusiness = async () => {
+            if (businessSlug) {
+                setLoading(true);
+                try {
+                    const business = await businessService.getBusinessBySlug(businessSlug);
+
+                    if (business) {
+                        setCurrentBusiness(business);
+                    } else {
+                        console.error(`Business not found: ${businessSlug}`);
+                        setCurrentBusiness(null);
+                    }
+                } catch (err) {
+                    console.error("Error fetching business:", err);
+                    setCurrentBusiness(null);
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setLoading(false); // Not in a business route
+            }
+        };
+
+        fetchBusiness();
+    }, [businessSlug]);
+
+    const value = {
+        currentBusiness,
+        loading,
+        isBusinessContext: !!businessSlug
+    };
+
+    return (
+        <BusinessContext.Provider value={value}>
+            {children}
+        </BusinessContext.Provider>
+    );
+};

@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { FirestoreContentService } from '../services/firebase/FirestoreContentService';
 
+import { useBusiness } from './BusinessContext';
+
 const ContentContext = createContext();
 
 const contentService = new FirestoreContentService();
@@ -14,18 +16,22 @@ export const ContentProvider = ({ children }) => {
         contact: {}
     });
     const [loading, setLoading] = useState(true);
+    const { currentBusiness } = useBusiness();
 
-    // Initial load of all content
+    // Initial load of all content when business changes
     useEffect(() => {
-        refreshContent();
-    }, []);
+        if (currentBusiness) {
+            refreshContent();
+        }
+    }, [currentBusiness]);
 
     const refreshContent = async () => {
         setLoading(true);
         try {
-            const home = await contentService.getPageContent('home');
-            const about = await contentService.getPageContent('about');
-            const contact = await contentService.getPageContent('contact');
+            const businessId = currentBusiness?.id;
+            const home = await contentService.getPageContent('home', businessId);
+            const about = await contentService.getPageContent('about', businessId);
+            const contact = await contentService.getPageContent('contact', businessId);
 
             setContent({
                 home: home || {},
@@ -41,7 +47,7 @@ export const ContentProvider = ({ children }) => {
 
     const updatePageContent = async (pageId, newContent) => {
         try {
-            await contentService.updatePageContent(pageId, newContent);
+            await contentService.updatePageContent(pageId, newContent, currentBusiness?.id);
             // Optimistic update
             setContent(prev => ({
                 ...prev,

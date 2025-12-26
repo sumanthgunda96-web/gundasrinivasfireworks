@@ -118,7 +118,7 @@ const Register = () => {
                 </h2>
                 <p className="mt-2 text-center text-sm text-slate-light">
                     Or{' '}
-                    <Link to="/login" className="font-medium text-secondary hover:text-secondary-dark transition-colors">
+                    <Link to="/a2z/buyer/login" className="font-medium text-secondary hover:text-secondary-dark transition-colors">
                         sign in to your existing account
                     </Link>
                 </p>

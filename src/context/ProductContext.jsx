@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { FirestoreProductService } from '../services/firebase/FirestoreProductService';
 
+import { useBusiness } from './BusinessContext';
+
 const ProductContext = createContext();
 const productService = new FirestoreProductService();
 
@@ -15,23 +17,32 @@ export const useProducts = () => {
 export const ProductProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { currentBusiness } = useBusiness();
 
     useEffect(() => {
+        if (!currentBusiness) return;
+
         setLoading(true);
         // Subscribe to real-time updates
         const unsubscribe = productService.subscribeToProducts((updatedProducts) => {
-            setProducts(updatedProducts);
+            // Filter products for the current business
+            // Includes legacy products (no businessId) ONLY for the main store
+            const filteredProducts = updatedProducts.filter(p =>
+                p.businessId === currentBusiness.id ||
+                (!p.businessId && currentBusiness.slug === 'gundasrinivasfireworks')
+            );
+            setProducts(filteredProducts);
             setLoading(false);
         });
 
         // Cleanup subscription on unmount
         return () => unsubscribe();
-    }, []);
+    }, [currentBusiness]);
 
     const addProduct = async (productData) => {
         // No need to manually update state as subscription will catch it
         // But we still return the new product for the caller
-        const newProduct = await productService.addProduct(productData);
+        const newProduct = await productService.addProduct(productData, currentBusiness?.id);
         return newProduct;
     };
 

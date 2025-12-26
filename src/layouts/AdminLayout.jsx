@@ -3,9 +3,15 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Package, ShoppingBag, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
+import { useBusiness } from '../context/BusinessContext';
+
 const AdminLayout = () => {
     const { logout } = useAuth();
     const navigate = useNavigate();
+    const { currentBusiness } = useBusiness();
+
+    // Construct base admin URL
+    const adminBase = currentBusiness ? `/a2z/${currentBusiness.slug}/admin` : '/admin';
 
     const handleLogout = async () => {
         try {
@@ -21,12 +27,14 @@ const AdminLayout = () => {
             {/* Sidebar */}
             <aside className="w-64 bg-white shadow-md flex flex-col">
                 <div className="p-6 border-b border-gray-100">
-                    <h1 className="text-2xl font-bold text-primary font-serif">Admin Panel</h1>
+                    <h1 className="text-2xl font-bold text-primary font-serif">
+                        {currentBusiness?.name || 'Admin Panel'}
+                    </h1>
                 </div>
 
                 <nav className="flex-1 p-4 space-y-2">
                     <NavLink
-                        to="/admin/dashboard"
+                        to={`${adminBase}/dashboard`}
                         className={({ isActive }) => `flex items-center px-4 py-3 rounded-lg transition-colors ${isActive ? 'bg-primary text-white' : 'text-slate-600 hover:bg-gray-50'}`}
                     >
                         <LayoutDashboard className="w-5 h-5 mr-3" />
@@ -34,7 +42,7 @@ const AdminLayout = () => {
                     </NavLink>
 
                     <NavLink
-                        to="/admin/orders"
+                        to={`${adminBase}/orders`}
                         className={({ isActive }) => `flex items-center px-4 py-3 rounded-lg transition-colors ${isActive ? 'bg-primary text-white' : 'text-slate-600 hover:bg-gray-50'}`}
                     >
                         <ShoppingBag className="w-5 h-5 mr-3" />
@@ -42,7 +50,7 @@ const AdminLayout = () => {
                     </NavLink>
 
                     <NavLink
-                        to="/admin/products"
+                        to={`${adminBase}/products`}
                         className={({ isActive }) => `flex items-center px-4 py-3 rounded-lg transition-colors ${isActive ? 'bg-primary text-white' : 'text-slate-600 hover:bg-gray-50'}`}
                     >
                         <Package className="w-5 h-5 mr-3" />
@@ -50,7 +58,7 @@ const AdminLayout = () => {
                     </NavLink>
 
                     <NavLink
-                        to="/admin/content"
+                        to={`${adminBase}/content`}
                         className={({ isActive }) => `flex items-center px-4 py-3 rounded-lg transition-colors ${isActive ? 'bg-primary text-white' : 'text-slate-600 hover:bg-gray-50'}`}
                     >
                         <LayoutDashboard className="w-5 h-5 mr-3" />

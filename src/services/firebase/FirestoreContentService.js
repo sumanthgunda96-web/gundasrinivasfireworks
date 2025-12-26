@@ -8,21 +8,34 @@ import { db } from '../../config/firebase';
 import { IContentService } from '../interfaces';
 
 export class FirestoreContentService extends IContentService {
-    async getPageContent(pageId) {
-        const docRef = doc(db, 'content', pageId);
+    async getPageContent(pageId, businessId) {
+        // If no businessId provided (legacy/platform), use root content collection or default
+        if (!businessId) {
+            // Fallback for platform pages or legacy
+            const docRef = doc(db, 'content', pageId);
+            const docSnap = await getDoc(docRef);
+            return docSnap.exists() ? docSnap.data() : {};
+        }
+
+        // Structure: businesses/{businessId}/content/{pageId}
+        const docRef = doc(db, 'businesses', businessId, 'content', pageId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
             return docSnap.data();
         } else {
-            // Return default/empty structure if not found to prevent crashes
             return {};
         }
     }
 
-    async updatePageContent(pageId, content) {
-        const docRef = doc(db, 'content', pageId);
-        // use setDoc with merge: true to create if not exists or update
+    async updatePageContent(pageId, content, businessId) {
+        if (!businessId) {
+            const docRef = doc(db, 'content', pageId);
+            await setDoc(docRef, content, { merge: true });
+            return content;
+        }
+
+        const docRef = doc(db, 'businesses', businessId, 'content', pageId);
         await setDoc(docRef, content, { merge: true });
         return content;
     }
