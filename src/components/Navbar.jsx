@@ -73,7 +73,7 @@ const Navbar = () => {
 
                                     {/* Dropdown Menu */}
                                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-1 border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right z-50">
-                                        <Link to={`${storeUrl}/profile`} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-secondary">
+                                        <Link to="/a2z/super-admin" className="block px-4 py-2 hover:bg-gray-100 text-gray-700 font-medium">
                                             <User className="h-4 w-4 inline mr-2" />
                                             My Profile
                                         </Link>

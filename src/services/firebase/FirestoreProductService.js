@@ -10,7 +10,7 @@ import {
 import { db } from '../../config/firebase';
 import { IProductService } from '../interfaces';
 
-export class FirestoreProductService extends IProductService {
+export class FirestoreProductService {
     async getAllProducts() {
         // Keep this for one-time fetches if needed
         const querySnapshot = await getDocs(collection(db, 'products'));

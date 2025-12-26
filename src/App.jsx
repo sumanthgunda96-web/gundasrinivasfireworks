@@ -21,7 +21,7 @@ import About from './components/About';
 import Contact from './components/Contact';
 import CreateStore from './pages/CreateStore';
 import CreateBusinessAccount from './pages/CreateBusinessAccount';
-import PlatformAdminDashboard from './pages/PlatformAdminDashboard';
+import SuperAdminDashboard from './pages/SuperAdminDashboard';
 import BusinessLogin from './pages/BusinessLogin';
 import TestSheets from './pages/TestSheets';
 
@@ -46,7 +46,7 @@ function App() {
           <Route path="/a2z/seller/create-account" element={<CreateBusinessAccount />} />
 
           {/* SUPER ADMIN ROUTE */}
-          <Route path="/a2z/platform/admin" element={<PlatformAdminDashboard />} />
+          <Route path="/a2z/super-admin" element={<SuperAdminDashboard />} />
 
           {/* Buyer Auth Routes */}
           <Route path="/a2z/buyer/login" element={<Login />} />
