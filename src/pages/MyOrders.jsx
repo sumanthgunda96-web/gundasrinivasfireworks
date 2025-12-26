@@ -1,16 +1,20 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Package, Calendar, CreditCard, MapPin } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
+import { useBusiness } from '../context/BusinessContext';
 
 const MyOrders = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { currentUser } = useAuth();
     const { orders } = useOrders();
+    const { currentBusiness } = useBusiness();
 
     if (!currentUser) {
-        navigate('/login');
+        const returnUrl = encodeURIComponent(location.pathname);
+        navigate(`/a2z/buyer/login?returnUrl=${returnUrl}`);
         return null;
     }
 
@@ -24,7 +28,7 @@ const MyOrders = () => {
                         Start shopping to see your orders here!
                     </p>
                     <div className="mt-6">
-                        <Link to="/products" className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-xl text-white bg-primary hover:bg-primary-dark transition-all">
+                        <Link to={`/a2z/${currentBusiness.slug}/products`} className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-xl text-white bg-primary hover:bg-primary-dark transition-all">
                             Browse Products
                         </Link>
                     </div>
@@ -106,10 +110,10 @@ const MyOrders = () => {
                                     </div>
                                 </div>
                                 <div className="mt-4 pt-4 border-t border-gray-200 flex gap-3">
-                                    <Link to={`/order-tracking/${order.id}`} className="inline-block px-6 py-2 bg-secondary text-white rounded-xl hover:bg-secondary-dark transition-all font-medium">
+                                    <Link to={`/a2z/${currentBusiness.slug}/order-tracking/${order.id}`} className="inline-block px-6 py-2 bg-secondary text-white rounded-xl hover:bg-secondary-dark transition-all font-medium">
                                         Track Order
                                     </Link>
-                                    <Link to={`/order-confirmation/${order.id}`} className="inline-block px-6 py-2 bg-white border-2 border-primary text-primary rounded-xl hover:bg-gray-50 transition-all font-medium">
+                                    <Link to={`/a2z/${currentBusiness.slug}/order-confirmation/${order.id}`} className="inline-block px-6 py-2 bg-white border-2 border-primary text-primary rounded-xl hover:bg-gray-50 transition-all font-medium">
                                         View Details
                                     </Link>
                                 </div>

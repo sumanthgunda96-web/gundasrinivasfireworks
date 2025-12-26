@@ -7,8 +7,13 @@ const businessService = new FirestoreBusinessService();
 
 export const useBusiness = () => {
     const context = useContext(BusinessContext);
+    // If used outside provider (e.g. global login), return null context
     if (!context) {
-        throw new Error('useBusiness must be used within a BusinessProvider');
+        return {
+            currentBusiness: null,
+            loading: false,
+            isBusinessContext: false
+        };
     }
     return context;
 };

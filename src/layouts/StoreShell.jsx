@@ -31,6 +31,37 @@ const StoreShell = () => {
         );
     }
 
+    if (currentBusiness.status === 'pending') {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-center px-4">
+                <div className="bg-amber-100 p-4 rounded-full mb-6">
+                    <span className="text-4xl">⏳</span>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Store Under Review</h2>
+                <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                    This store is currently waiting for approval from the platform administrators. Please check back later.
+                </p>
+                <a href="/" className="text-indigo-600 font-medium hover:underline">
+                    &larr; Return to A2Z Platform
+                </a>
+            </div>
+        );
+    }
+
+    if (currentBusiness.status === 'rejected') {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-center px-4">
+                <div className="bg-red-100 p-4 rounded-full mb-6">
+                    <span className="text-4xl">🚫</span>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Store Unavailable</h2>
+                <p className="text-red-600 mb-8 max-w-md mx-auto">
+                    This store has been suspended or rejected for violating platform policies.
+                </p>
+            </div>
+        );
+    }
+
     const location = useLocation();
     const isAdmin = location.pathname.includes('/admin');
 

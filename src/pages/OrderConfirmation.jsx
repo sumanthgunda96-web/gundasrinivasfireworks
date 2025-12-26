@@ -2,10 +2,12 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { CheckCircle, Package, MapPin, CreditCard } from 'lucide-react';
 import { useOrders } from '../context/OrderContext';
+import { useBusiness } from '../context/BusinessContext';
 
 const OrderConfirmation = () => {
     const { orderId } = useParams();
     const { getOrderById } = useOrders();
+    const { currentBusiness } = useBusiness();
 
     const order = getOrderById(orderId);
 
@@ -14,7 +16,7 @@ const OrderConfirmation = () => {
             <div className="min-h-screen bg-cream py-12 px-4 flex items-center justify-center">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-primary">Order not found</h2>
-                    <Link to="/" className="text-secondary hover:underline mt-4 inline-block">
+                    <Link to={`/a2z/${currentBusiness?.slug || ''}`} className="text-secondary hover:underline mt-4 inline-block">
                         Go to Home
                     </Link>
                 </div>
@@ -87,14 +89,14 @@ const OrderConfirmation = () => {
                 </div>
 
                 <div className="flex gap-4">
-                    <Link to={`/order-tracking/${order.id}`} className="flex-1 bg-secondary text-white py-3 px-6 rounded-xl hover:bg-secondary-dark transition-all text-center font-medium">
+                    <Link to={`/a2z/${currentBusiness.slug}/order-tracking/${order.id}`} className="flex-1 bg-secondary text-white py-3 px-6 rounded-xl hover:bg-secondary-dark transition-all text-center font-medium">
                         Track Order
                     </Link>
-                    <Link to="/my-orders" className="flex-1 bg-primary text-white py-3 px-6 rounded-xl hover:bg-primary-dark transition-all text-center font-medium">
+                    <Link to={`/a2z/${currentBusiness.slug}/my-orders`} className="flex-1 bg-primary text-white py-3 px-6 rounded-xl hover:bg-primary-dark transition-all text-center font-medium">
                         View All Orders
                     </Link>
                 </div>
-                <Link to="/" className="block text-center mt-4 text-slate-light hover:text-primary transition-colors">
+                <Link to={`/a2z/${currentBusiness.slug}/products`} className="block text-center mt-4 text-slate-light hover:text-primary transition-colors">
                     Continue Shopping
                 </Link>
             </div>

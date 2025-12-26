@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Trash2, Plus, Minus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useBusiness } from '../context/BusinessContext';
 
 const Cart = () => {
     const { cartItems, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
     const { currentUser } = useAuth();
+    const { currentBusiness } = useBusiness();
     const navigate = useNavigate();
 
     if (cartItems.length === 0) {
@@ -20,7 +22,7 @@ const Cart = () => {
                     </p>
                     <div className="mt-6">
                         <Link
-                            to="/products"
+                            to={`/a2z/${currentBusiness.slug}/products`}
                             className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-xl text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
                         >
                             Continue Shopping
@@ -93,19 +95,20 @@ const Cart = () => {
                         <button
                             onClick={() => {
                                 if (!currentUser) {
-                                    alert('Please login to proceed to checkout');
-                                    navigate('/login');
+                                    // Redirect to universal buyer login with return URL
+                                    const returnUrl = encodeURIComponent(window.location.pathname.replace('/cart', '/checkout'));
+                                    navigate(`/a2z/buyer/login?returnUrl=${returnUrl}`);
                                     return;
                                 }
-                                navigate('/checkout');
+                                navigate(`/a2z/${currentBusiness.slug}/checkout`);
                             }}
                             className="w-full block bg-primary text-white py-3 px-6 rounded-xl hover:bg-primary-dark transition-all duration-300 font-medium shadow-md hover:shadow-lg transform active:scale-95 text-center"
                         >
                             Proceed to Checkout
                         </button>
                         <Link
-                            to="/products"
-                            className="block text-center mt-4 text-sm text-slate-light hover:text-primary transition-colors"
+                            to={`/a2z/${currentBusiness.slug}/products`}
+                            className="block text-center mt-4 text-sm text-slate-light hover:text-secondary transition-colors"
                         >
                             Continue Shopping
                         </Link>

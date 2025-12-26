@@ -2,10 +2,12 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Package, MapPin, CreditCard, CheckCircle, Truck, Home } from 'lucide-react';
 import { useOrders } from '../context/OrderContext';
+import { useBusiness } from '../context/BusinessContext';
 
 const OrderTracking = () => {
     const { orderId } = useParams();
     const { getOrderById } = useOrders();
+    const { currentBusiness } = useBusiness();
 
     const order = getOrderById(orderId);
 
@@ -79,12 +81,12 @@ const OrderTracking = () => {
                                     <div key={step.key} className="relative flex items-start">
                                         {/* Icon */}
                                         <div className={`relative z-10 flex items-center justify-center w-12 h-12 rounded-full border-4 ${status === 'completed' ? 'bg-secondary border-secondary' :
-                                                status === 'current' ? 'bg-white border-secondary' :
-                                                    'bg-white border-gray-200'
+                                            status === 'current' ? 'bg-white border-secondary' :
+                                                'bg-white border-gray-200'
                                             }`}>
                                             <Icon className={`h-6 w-6 ${status === 'completed' ? 'text-white' :
-                                                    status === 'current' ? 'text-secondary' :
-                                                        'text-gray-400'
+                                                status === 'current' ? 'text-secondary' :
+                                                    'text-gray-400'
                                                 }`} />
                                         </div>
 

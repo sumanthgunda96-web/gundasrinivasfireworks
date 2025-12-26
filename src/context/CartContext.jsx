@@ -11,7 +11,23 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-    const [cartItems, setCartItems] = useState([]);
+    const [cartItems, setCartItems] = useState(() => {
+        try {
+            const savedCart = localStorage.getItem('cartItems');
+            return savedCart ? JSON.parse(savedCart) : [];
+        } catch (error) {
+            console.error('Error loading cart from localStorage:', error);
+            return [];
+        }
+    });
+
+    React.useEffect(() => {
+        try {
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        } catch (error) {
+            console.error('Error saving cart to localStorage:', error);
+        }
+    }, [cartItems]);
 
     const addToCart = (product) => {
         setCartItems((prevItems) => {

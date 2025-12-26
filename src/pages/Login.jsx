@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useBusiness } from '../context/BusinessContext';
 
 const Login = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
+    const { currentBusiness } = useBusiness();
+    const [searchParams] = useSearchParams();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -20,7 +23,15 @@ const Login = () => {
         try {
             await login(email, password);
             alert("Login successful! Welcome back!");
-            navigate('/');
+
+            const returnUrl = searchParams.get('returnUrl');
+            if (returnUrl) {
+                navigate(returnUrl);
+            } else if (currentBusiness) {
+                navigate(`/a2z/${currentBusiness.slug}`);
+            } else {
+                navigate('/');
+            }
         } catch (err) {
             setError(err.message || 'Failed to login');
         } finally {
@@ -36,7 +47,13 @@ const Login = () => {
                 </h2>
                 <p className="mt-2 text-center text-sm text-slate-light">
                     Or{' '}
-                    <Link to="/a2z/buyer/register" className="font-medium text-secondary hover:text-secondary-dark transition-colors">
+                    <Link
+                        to={currentBusiness
+                            ? `/a2z/${currentBusiness.slug}/register`
+                            : `/a2z/buyer/register${searchParams.get('returnUrl') ? `?returnUrl=${encodeURIComponent(searchParams.get('returnUrl'))}` : ''}`
+                        }
+                        className="font-medium text-secondary hover:text-secondary-dark transition-colors"
+                    >
                         create a new account
                     </Link>
                 </p>

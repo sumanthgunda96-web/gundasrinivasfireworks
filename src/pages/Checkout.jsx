@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { CreditCard, Banknote, MessageCircle, MapPin } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useBusiness } from '../context/BusinessContext';
 import { useOrders } from '../context/OrderContext';
 import { sendOrderEmail } from '../utils/emailService';
 import { logOrderToSheets } from '../utils/sheetsService';
 
 const Checkout = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { cartItems, getCartTotal, clearCart } = useCart();
     const { currentUser } = useAuth();
+    const { currentBusiness } = useBusiness();
     const { createOrder } = useOrders();
 
     const [paymentMethod, setPaymentMethod] = useState('');
@@ -27,12 +30,13 @@ const Checkout = () => {
 
     if (!currentUser) {
         alert('Please login to access checkout');
-        navigate('/login');
+        const returnUrl = encodeURIComponent(location.pathname);
+        navigate(`/a2z/buyer/login?returnUrl=${returnUrl}`);
         return null;
     }
 
     if (cartItems.length === 0) {
-        navigate('/cart');
+        navigate(`/a2z/${currentBusiness.slug}/cart`);
         return null;
     }
 
@@ -82,19 +86,19 @@ const Checkout = () => {
                 await sendOrderEmail(emailData);
                 await logOrderToSheets(emailData);
                 clearCart();
-                navigate(`/order-confirmation/${order.id}`);
+                navigate(`/a2z/${currentBusiness.slug}/order-confirmation/${order.id}`);
             } else if (paymentMethod === 'cod') {
                 await sendOrderEmail(emailData);
                 await logOrderToSheets(emailData);
                 clearCart();
-                navigate(`/order-confirmation/${order.id}`);
+                navigate(`/a2z/${currentBusiness.slug}/order-confirmation/${order.id}`);
             } else if (paymentMethod === 'online') {
                 alert('Redirecting to payment gateway...');
                 setTimeout(async () => {
                     await sendOrderEmail(emailData);
                     await logOrderToSheets(emailData);
                     clearCart();
-                    navigate(`/order-confirmation/${order.id}`);
+                    navigate(`/a2z/${currentBusiness.slug}/order-confirmation/${order.id}`);
                 }, 1500);
             }
         } catch (error) {

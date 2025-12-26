@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, ShoppingCart, User, Search, Sparkles, LogOut, ChevronDown, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -9,6 +9,7 @@ import { contentDefaults } from '../constants/contentDefaults';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const location = useLocation();
     const { getCartCount } = useCart();
     const { currentUser, logout } = useAuth();
     const { currentBusiness } = useBusiness();
@@ -91,7 +92,10 @@ const Navbar = () => {
                                     </div>
                                 </div>
                             ) : (
-                                <Link to="/a2z/buyer/login" className="text-slate-light hover:text-secondary transition-colors">
+                                <Link
+                                    to={`/a2z/buyer/login?returnUrl=${encodeURIComponent(location.pathname)}`}
+                                    className="text-slate-light hover:text-secondary transition-colors"
+                                >
                                     <User className="h-5 w-5" />
                                 </Link>
                             )}
@@ -129,7 +133,10 @@ const Navbar = () => {
                                         <LogOut className="h-5 w-5 mr-2" /> Logout
                                     </button>
                                 ) : (
-                                    <Link to="/a2z/buyer/login" className="flex items-center text-primary hover:text-secondary">
+                                    <Link
+                                        to={`/a2z/buyer/login?returnUrl=${encodeURIComponent(location.pathname)}`}
+                                        className="flex items-center text-primary hover:text-secondary"
+                                    >
                                         <User className="h-5 w-5 mr-2" /> Login
                                     </Link>
                                 )}

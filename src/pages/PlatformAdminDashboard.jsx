@@ -225,19 +225,36 @@ const PlatformAdminDashboard = () => {
                                         </td>
                                         <td className="p-4">
                                             <span className={`px-2 py-1 rounded-full text-xs font-medium border ${business.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-200' :
-                                                    'bg-green-50 text-green-700 border-green-200'
+                                                'bg-green-50 text-green-700 border-green-200'
                                                 }`}>
                                                 {business.status || 'Active'}
                                             </span>
                                         </td>
                                         <td className="p-4 flex gap-2 justify-end">
-                                            {business.status !== 'rejected' ? (
-                                                <button onClick={() => handleStatusChange(business.id, 'rejected')} className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg tooltip"><XCircle className="w-5 h-5" /></button>
-                                            ) : (
-                                                <button onClick={() => handleStatusChange(business.id, 'active')} className="p-2 text-green-600 hover:bg-green-50 rounded-lg tooltip"><CheckCircle className="w-5 h-5" /></button>
+                                            {business.status === 'pending' && (
+                                                <>
+                                                    <button onClick={() => handleStatusChange(business.id, 'active')} className="p-2 text-green-600 hover:bg-green-50 rounded-lg tooltip" title="Approve">
+                                                        <CheckCircle className="w-5 h-5" />
+                                                    </button>
+                                                    <button onClick={() => handleStatusChange(business.id, 'rejected')} className="p-2 text-red-600 hover:bg-red-50 rounded-lg tooltip" title="Reject">
+                                                        <XCircle className="w-5 h-5" />
+                                                    </button>
+                                                </>
+                                            )}
+                                            {business.status === 'active' && (
+                                                <button onClick={() => handleStatusChange(business.id, 'rejected')} className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg tooltip" title="Suspend">
+                                                    <XCircle className="w-5 h-5" />
+                                                </button>
+                                            )}
+                                            {business.status === 'rejected' && (
+                                                <button onClick={() => handleStatusChange(business.id, 'active')} className="p-2 text-green-600 hover:bg-green-50 rounded-lg tooltip" title="Reactivate">
+                                                    <CheckCircle className="w-5 h-5" />
+                                                </button>
                                             )}
                                             <div className="w-px bg-gray-200 mx-1"></div>
-                                            <button onClick={() => handleDelete(business.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg tooltip"><Trash2 className="w-5 h-5" /></button>
+                                            <button onClick={() => handleDelete(business.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg tooltip" title="Delete Permanently">
+                                                <Trash2 className="w-5 h-5" />
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}

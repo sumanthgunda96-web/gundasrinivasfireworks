@@ -7,7 +7,8 @@ import { Store, User, Mail, Lock, ArrowRight, Loader, CheckCircle } from 'lucide
 const CreateBusinessAccount = () => {
     const navigate = useNavigate();
     const { signup } = useAuth();
-    const [step, setStep] = useState(1); // 1: Details, 2: Verification (skipped for now or integrated)
+    const [successMode, setSuccessMode] = useState(false);
+    const [step, setStep] = useState(1);
 
     const [formData, setFormData] = useState({
         businessName: '',
@@ -23,12 +24,12 @@ const CreateBusinessAccount = () => {
 
     const businessService = new FirestoreBusinessService();
 
+    // ... (handleChange and handleSlugChange remain same)
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => {
             const updates = { ...prev, [name]: value };
-
-            // Auto-generate slug from business name if slug hasn't been manually edited
             if (name === 'businessName' && !prev.slugEdited) {
                 updates.slug = value.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
             }
@@ -55,30 +56,29 @@ const CreateBusinessAccount = () => {
             if (formData.password.length < 6) throw new Error("Password must be at least 6 characters");
             if (formData.slug.length < 3) throw new Error("Store URL must be at least 3 characters");
 
-            // 2. Check if slug is available first to avoid creating user if store fails
+            // 2. Check slug
             const isTaken = await businessService.isSlugTaken(formData.slug);
             if (isTaken) throw new Error("This Store URL is already taken. Please choose another.");
 
-            // 3. Create User Account
-            // Note: register returns the user credential or user object
+            // 3. Create User
             const userCredential = await signup(formData.email, formData.password, formData.fullName);
-            const user = userCredential.user || userCredential; // Handle different return types if needed
+            const user = userCredential.user || userCredential;
 
-            // 4. Create Business
+            // 4. Create Business (PENDING)
             await businessService.createBusiness({
                 name: formData.businessName,
                 slug: formData.slug,
                 ownerId: user.uid,
                 ownerEmail: user.email,
-                themeColor: '#4f46e5'
+                themeColor: '#4f46e5',
+                status: 'pending' // Enforce approval workflow
             });
 
-            // 5. Redirect to Admin
-            navigate(`/a2z/${formData.slug}/admin`);
+            // 5. Show Success UI
+            setSuccessMode(true);
 
         } catch (err) {
             console.error("Signup Error:", err);
-            // Handle Firebase auth errors specifically if needed
             if (err.code === 'auth/email-already-in-use') {
                 setError("An account with this email already exists. Please login.");
             } else {
@@ -88,6 +88,31 @@ const CreateBusinessAccount = () => {
             setLoading(false);
         }
     };
+
+    if (successMode) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50 flex items-center justify-center p-4">
+                <div className="max-w-lg w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="w-8 h-8 text-green-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Registration Successful!</h2>
+                    <p className="text-gray-600 mb-6">
+                        Your store <span className="font-semibold text-indigo-600">/a2z/{formData.slug}</span> has been created.
+                    </p>
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-left mb-8">
+                        <h3 className="font-bold text-amber-800 text-sm mb-1">⚠️ Approval Required</h3>
+                        <p className="text-amber-700 text-sm">
+                            For quality assurance, all new businesses must be approved by an administrator before they can go live. You will be notified via email once approved.
+                        </p>
+                    </div>
+                    <Link to="/" className="block w-full py-3 px-4 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                        Return to Home
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50 flex items-center justify-center p-4">

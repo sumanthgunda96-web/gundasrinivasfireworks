@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useBusiness } from '../context/BusinessContext';
 import { generateVerificationCode, storeVerificationCode, verifyCode } from '../utils/verificationService';
 import { sendVerificationEmail } from '../utils/emailService';
 import VerificationModal from '../components/VerificationModal';
@@ -9,6 +10,8 @@ import VerificationModal from '../components/VerificationModal';
 const Register = () => {
     const navigate = useNavigate();
     const { signup } = useAuth();
+    const { currentBusiness } = useBusiness();
+    const [searchParams] = useSearchParams();
 
     useEffect(() => {
         console.log('🚀 Register component mounted');
@@ -102,7 +105,15 @@ const Register = () => {
         try {
             await signup(formData.email, formData.password, formData.name);
             alert("Registration successful! You can now login.");
-            navigate('/login');
+
+            const returnUrl = searchParams.get('returnUrl');
+            if (returnUrl) {
+                navigate(returnUrl);
+            } else if (currentBusiness) {
+                navigate(`/a2z/${currentBusiness.slug}/login`);
+            } else {
+                navigate('/login');
+            }
         } catch (err) {
             setError(err.message || 'Failed to create account');
         } finally {
@@ -118,7 +129,13 @@ const Register = () => {
                 </h2>
                 <p className="mt-2 text-center text-sm text-slate-light">
                     Or{' '}
-                    <Link to="/a2z/buyer/login" className="font-medium text-secondary hover:text-secondary-dark transition-colors">
+                    <Link
+                        to={currentBusiness
+                            ? `/a2z/${currentBusiness.slug}/login`
+                            : `/a2z/buyer/login${searchParams.get('returnUrl') ? `?returnUrl=${encodeURIComponent(searchParams.get('returnUrl'))}` : ''}`
+                        }
+                        className="font-medium text-secondary hover:text-secondary-dark transition-colors"
+                    >
                         sign in to your existing account
                     </Link>
                 </p>
